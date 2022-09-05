@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import React,{ useState, useEffect, useRef } from "react";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button, FormControl, Grid, InputLabel, OutlinedInput, Typography } from "@mui/material";
 
-export default function FCTextField({ urlUpdated }) {
+export default function FCTextField({ urlUpdated,inputRef }) {
 
     return (
         <TextField
@@ -18,6 +18,8 @@ export default function FCTextField({ urlUpdated }) {
              }}
             onChange={urlUpdated}
             testid="URLInput"
+            inputRef={inputRef}
         />
+    
     );
 }

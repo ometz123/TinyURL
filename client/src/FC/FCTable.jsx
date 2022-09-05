@@ -9,15 +9,20 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import * as React from 'react';
 
-const columns = [
-    { id: 'tiny', label: 'Tiny', minWidth: 60 },
-    { id: 'full', label: 'Full', minWidth: 100 },
-];
+
 
 export default function FCTable({ urls }) {
+   
+   console.log('====================================');
+   console.log(urls);
+   console.log('====================================');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const server = "localhost:5000/";
+    const columns = [
+        { id: 'tiny', label: 'Tiny', minWidth: 60 },
+        { id: 'full', label: 'Full', minWidth: 100 },
+    ];
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -30,15 +35,15 @@ export default function FCTable({ urls }) {
         console.log("You CLicked", link);
     }
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table 
-                stickyHeader 
-                aria-label="sticky table"
-                testid="URLsTable"
+        <Paper sx={{ width: "86%", border: 1 }}>
+            <TableContainer sx={{ maxHeight: 440, }}>
+                <Table
+                    stickyHeader
+                    aria-label="sticky table"
+                    testid="URLsTable"
                 >
                     <TableHead
-                    testid="URLsTableHeader"
+                        testid="URLsTableHeader"
                     >
                         <TableRow>
                             {columns.map((column) => (
@@ -60,10 +65,10 @@ export default function FCTable({ urls }) {
                                         {columns.map((column) => {
                                             const value = url[column.id];
                                             return (
-                                                <TableCell 
-                                                key={column.id} 
-                                                align={column.align}
-                                                testid={`URLTable_${column.id}_${value}`}
+                                                <TableCell
+                                                    key={column.id}
+                                                    align={column.align}
+                                                    testid={`URLTable_${column.id}_${value}`}
                                                 >
                                                     {column.id === "tiny" ?
                                                         <Link

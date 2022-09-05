@@ -15,7 +15,7 @@
 
 .App-header {
   /*background-color: #282c34;*/
-  min-height: 60vh;
+  /* min-height: 60vh; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,4 +35,23 @@
   to {
     transform: rotate(360deg);
   }
+}
+.App-container {
+  /* background-color: #282c34; */
+  /* min-height: 60vh; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+.My-Button {
+  text-transform: capitalize !important;
+}
+.row {
+  display: "-ms-flexbox";
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
