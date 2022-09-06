@@ -14,7 +14,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FCSingUpDialog() {
+export default function FCSingUpDialog({ login }) {
     const [open, setOpen] = useState(false);
     const [userName, setUserName] = useState("");
     const [userPassword, setUserPassword] = useState("");
@@ -38,25 +38,51 @@ export default function FCSingUpDialog() {
             "userName": userName,
             "password": userPassword,
         }).catch(err => {
-            handleError(err)
+            handleStatus(err.response.data.length > 0 ? err.response.data : err.response.statusText, err.response.status);
         });
-    }
-    const handleError = async (err) => {
-        console.error({ err });
-        if (err.response) {
-            const severity = err.stack.slice(0, err.stack.indexOf(":")).toLowerCase();
-            setAlert(
-                <Stack sx={{ width: '100%' }} spacing={2}>
-                    <Alert severity={severity}>{err.response.data}</Alert>
-                </Stack>);
+        if (res) {
+            console.log({ res });
+            await handleStatus(`Hello ${res.data.userName}`, res.status);
+            setOpen(false);
+            login(userName, userPassword)
         }
+    }
+    const handleStatus = async (data, status) => {
+        console.log({ data, status });
+        let severity = "";
+        switch (true) {
+            case status >= 500:
+                severity = "error"
+                break;
+            case status >= 400:
+                severity = "error"
+                break;
+            case status >= 300:
+                severity = "warning"
+                break;
+            case status >= 200:
+                severity = "success"
+                break;
+            case status >= 100:
+                severity = "info"
+                break;
+
+            default:
+                severity = "info";
+                break;
+        }
+        setAlert(
+            <Stack sx={{ width: '100%' }} spacing={2}>
+                <Alert severity={severity}>{data}</Alert>
+            </Stack>);
+
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve()
                 setAlert(<></>)
             }, 5000);
         })
-    };
+    }
     return (
         <div>
             <Button
