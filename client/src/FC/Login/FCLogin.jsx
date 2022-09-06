@@ -8,7 +8,7 @@ import { Typography, AppBar, Toolbar, TextField, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import FCTable from '../FCTable';
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import FCUser from './FCUser';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -27,6 +27,9 @@ export default function FCLogin() {
     const [urls, setUrls] = useState([]);
     const [loading, setLoading] = useState(false);
     const textInput = useRef(null);
+    let navigate = useNavigate();
+
+
     const view = () => {
         if (!loading) {
             return (
@@ -91,7 +94,7 @@ export default function FCLogin() {
 
     const getAllURLs = async (user) => {
         console.log('====================================');
-        console.log("getAllURLs",user);
+        console.log("getAllURLs", user);
         console.log('====================================');
         const res = await axios.post("http://localhost:5000", user)
             .catch(err => {
@@ -124,10 +127,12 @@ export default function FCLogin() {
             if (res.data.isAdmin) {
                 console.log('====================================');
                 console.log("Hello Admin!");
+                navigate(`/admin`)
                 console.log('====================================');
             } else {
                 console.log('====================================');
                 console.log("Hello User!");
+                navigate(`/`)
                 console.log('====================================');
             }
             localStorage.setItem("user", JSON.stringify(res.data))
@@ -178,7 +183,7 @@ export default function FCLogin() {
         if (user) {
             await getAllURLs(JSON.parse(user));
         }
-    }, [,user]);
+    }, [, user]);
 
 
     return (
