@@ -6,10 +6,12 @@ const cors = require('cors');
 const characters = require("./characters.json");
 const fs = require('fs');
 const app = express();
+const nodemailer = require('nodemailer');
 
 mongoose.connect('mongodb://localhost/urlShortener', {
   useNewUrlParser: true, useUnifiedTopology: true
 })
+
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json());
 app.use(cors({
@@ -222,10 +224,9 @@ app.post('/login', async (req, res) => {
 app.post('/signUp', async (req, res) => {
   const userName = req.body.userName;
   const password = req.body.password;
-  const isAdmin = req.body.isAdmin;
-
-  if (userName !== undefined && password !== undefined) {
-
+  const isAdmin = false;//req.body.isAdmin;
+  console.log({ userName, password, isAdmin });
+  if (userName.length > 3 && password.length > 3 && isAdmin !== undefined) {
     let user = await User.findOne({ userName });
     if (user) return res.status(400).send('User already registered.');
 
@@ -233,9 +234,10 @@ app.post('/signUp', async (req, res) => {
     await user.save();
 
     console.log(user);
-    return res.send(`New user!: "${user.userName}"`)
+    await sendMail("rupbgroup4@gmail.com", userName);
+    return res.send({ userName: user.userName, isAdmin: user.isAdmin })
   } else {
-    return res.send(`error userName or password:${{ userName, password }}`)
+    return res.status(400).send("error username or password")
   }
 
 })
@@ -246,6 +248,27 @@ const wait = async (time) => {
     }, time);
   })
 };
+const sendMail = async (to, userName) => {
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'rupbgroup4@gmail.com',
+      //pass: 'imcfxbqfkjogybdv'
+      pass: process.env["TinyUrlMailPassword-rupbgroup4@gmail.com"]
+    }
+  });
+
+  let info = await transporter.sendMail({
+    //from: '<TinyURL>', // sender address
+    from: '"TinyURL" <rupbgroup4@gmail.com>', // sender address
+    to,//: "rupbgroup4@gmail.com",//, baz@example.com", // list of receivers
+    subject: `Hello ${userName}`, // Subject line
+    text: "Wellcome to TinyURL!", // plain text body
+    html: `<b>Hello ${userName}!,\nWellcome to TinyURL !</b>`, // html body
+  });
+  console.log("Message sent: %s", info.messageId);
+
+}
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => console.info(`> Listening on port ${port}...`));
