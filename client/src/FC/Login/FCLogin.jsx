@@ -19,7 +19,6 @@ export default function FCLogin() {
     //let userPassword = "";
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
     const [alert, setAlert] = useState(<></>)
-    const [dialog, setDialog] = useState(<></>)
     const [userName, setUserName] = useState("User");
     const isAdmin = false;
     const [userPassword, setUserPassword] = useState("");
@@ -108,8 +107,21 @@ export default function FCLogin() {
     const handleUserPassword = ({ target: { value } }) => {
         setUserPassword(value)
     }
-    const login = async () => {
-        const res = await axios.post("/login", { userName, password: userPassword })
+    const login = async (login = null) => {
+        const userReq = {
+            userName: login ? login.username : userName,
+            password: login ? login.userpassword : userPassword
+        };
+        // if (login) {
+        //     userReq.userName = login.username;
+        //     userReq.password = login.userpassword;
+        // } else {
+        //     userReq.userName = userName;
+        //     userReq.password = userPassword
+
+        // }
+        console.log({ userReq });
+        const res = await axios.post("/login", userReq)
             .catch(err => {
                 console.log({ err });
                 handleStatus(err.response.data.length > 0 ? err.response.data : err.response.statusText, err.response.status);
@@ -131,10 +143,8 @@ export default function FCLogin() {
     }
     const logout = () => {
         navigate(`/`);
-        localStorage.setItem("user", null)
+        localStorage.removeItem("user")
         setUser(null)
-
-
     }
     const handleStatus = async (data, status) => {
         console.log({ data, status });
@@ -172,10 +182,14 @@ export default function FCLogin() {
             }, 5000);
         })
     }
-    useEffect(async () => {
+    const loginFromSignUp = async (username, userpassword) => {
+
+        login({ username, userpassword })
+    }
+    useEffect(() => {
         const user = localStorage.getItem("user");
         if (user) {
-            await getAllURLs(JSON.parse(user));
+            getAllURLs(JSON.parse(user));
         }
     }, [, user]);
 
@@ -205,7 +219,7 @@ export default function FCLogin() {
                                     <Button
                                         variant="contained"
                                         className="My-Button"
-                                        onClick={login}
+                                        onClick={() => login()}
                                         disabled={!(userName.length > 3 && userPassword.length > 5)}
                                         type='button'
                                     >
@@ -220,20 +234,24 @@ export default function FCLogin() {
                         </div>
                         <div style={{ display: "flex" }}>
                             don't have an account yet?
-                            <FCSingUpDialog />
+                            <FCSingUpDialog login={loginFromSignUp} />
                         </div>
                     </div>
                     :
-                    <Button
-                        variant="contained"
-                        className="My-Button"
-                        onClick={logout}
-                        type='button'
-                    >
-                        <p>
-                            Log Out
-                        </p>
-                    </Button>}
+                    <div>
+                        <h1>Hello {user.userName}</h1>
+                        <Button
+                            variant="contained"
+                            className="My-Button"
+                            onClick={logout}
+                            type='button'
+                        >
+                            <p>
+                                Log Out
+                            </p>
+                        </Button>
+                    </div>
+                }
                 <div>
                     {alert}
                 </div>
