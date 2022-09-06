@@ -12,10 +12,6 @@ import * as React from 'react';
 
 
 export default function FCTable({ urls }) {
-   
-   console.log('====================================');
-   console.log(urls);
-   console.log('====================================');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const server = "localhost:5000/";

@@ -29,11 +29,9 @@ export default function FCSingUpDialog() {
     };
     const handleUserName = ({ target: { value } }) => {
         setUserName(value)
-        console.log(userName);
     }
     const handleUserPassword = ({ target: { value } }) => {
         setUserPassword(value)
-        console.log(userPassword);
     }
     const handleSignUp = async () => {
         const res = await axios.post("/signUp", {
@@ -42,7 +40,6 @@ export default function FCSingUpDialog() {
         }).catch(err => {
             handleError(err)
         });
-        //console.log({ res });
     }
     const handleError = async (err) => {
         console.error({ err });

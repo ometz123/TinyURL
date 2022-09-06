@@ -17,7 +17,7 @@ import FCSingUpDialog from './FCSingUpDialog';
 export default function FCLogin() {
     //let userName = "";
     //let userPassword = "";
-    const [user, setUser] = useState(localStorage.getItem("user"));
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
     const [alert, setAlert] = useState(<></>)
     const [dialog, setDialog] = useState(<></>)
     const [userName, setUserName] = useState("User");
@@ -64,12 +64,10 @@ export default function FCLogin() {
             .catch(err => {
                 console.error(err);
             });
-        console.log(res.data);
         setUrls([...urls, {
             tiny: res.data.shortUrl.short,
             full: url
         }]);
-        console.log(textInput);
         setUrl("");
         setLoading(false);
         textInput.current.value = "";
@@ -93,9 +91,6 @@ export default function FCLogin() {
     };
 
     const getAllURLs = async (user) => {
-        console.log('====================================');
-        console.log("getAllURLs", user);
-        console.log('====================================');
         const res = await axios.post("http://localhost:5000", user)
             .catch(err => {
                 console.error(err);
@@ -109,10 +104,8 @@ export default function FCLogin() {
     };
     const handleUserName = ({ target: { value } }) => {
         setUserName(value)
-        console.log(userName);
     }
     const handleUserPassword = ({ target: { value } }) => {
-        console.log(userPassword);
         setUserPassword(value)
     }
     const login = async () => {
@@ -125,22 +118,24 @@ export default function FCLogin() {
             console.log({ res });
             handleStatus(`Hello ${res.data.userName}`, res.status);
             if (res.data.isAdmin) {
-                console.log('====================================');
                 console.log("Hello Admin!");
                 navigate(`/admin`)
-                console.log('====================================');
             } else {
-                console.log('====================================');
                 console.log("Hello User!");
                 navigate(`/`)
-                console.log('====================================');
             }
             localStorage.setItem("user", JSON.stringify(res.data))
             setUser(res.data)
             //await getAllURLs()
         }
     }
+    const logout = () => {
+        navigate(`/`);
+        localStorage.setItem("user", null)
+        setUser(null)
 
+
+    }
     const handleStatus = async (data, status) => {
         console.log({ data, status });
         let severity = "";
@@ -179,7 +174,6 @@ export default function FCLogin() {
     }
     useEffect(async () => {
         const user = localStorage.getItem("user");
-        console.log(`localStorage "user":`, JSON.parse(user));
         if (user) {
             await getAllURLs(JSON.parse(user));
         }
@@ -189,58 +183,62 @@ export default function FCLogin() {
     return (
         <div>
             <div style={{ textAlign: "justify", margin: 4, padding: 2 }}>
-                <div  >
-                    <div className='row'>
-                        <div >
-                            <TextField
-                                label="User Name"
-                                style={{ margin: 4, padding: 2 }}
-                                type="text"
-                                onChange={handleUserName}
-                            />
-                            <TextField
-                                label="Password"
-                                style={{ margin: 4, padding: 2 }}
-                                type="password"
-                                onChange={handleUserPassword}
-                            />
-                        </div>
-                        <div>
-                            <Button
-                                variant="contained"
-                                className="My-Button"
-                                onClick={login}
-                                disabled={!(userName.length > 3 && userPassword.length > 5)}
-                                type='button'
-                            >
-                                <p>
-
-                                    Login
-                                </p>
-                            </Button>
-                        </div>
-                    </div>
+                {!user ?
                     <div>
-                        {alert}
-                    </div>
-                    {/* <Link
-                    to="/admin">
-                    <Button
-                        disabled={allowLogin}
-                        type='button'
-                        variant="contained"
+                        <div  >
+                            <div className='row'>
+                                <div >
+                                    <TextField
+                                        label="User Name"
+                                        style={{ margin: 4, padding: 2 }}
+                                        type="text"
+                                        onChange={handleUserName}
+                                    />
+                                    <TextField
+                                        label="Password"
+                                        style={{ margin: 4, padding: 2 }}
+                                        type="password"
+                                        onChange={handleUserPassword}
+                                    />
+                                </div>
+                                <div>
+                                    <Button
+                                        variant="contained"
+                                        className="My-Button"
+                                        onClick={login}
+                                        disabled={!(userName.length > 3 && userPassword.length > 5)}
+                                        type='button'
+                                    >
+                                        <p>
+                                            Login
+                                        </p>
+                                    </Button>
+                                </div>
+                            </div>
 
+
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            don't have an account yet?
+                            <FCSingUpDialog />
+                        </div>
+                    </div>
+                    :
+                    <Button
+                        variant="contained"
+                        className="My-Button"
+                        onClick={logout}
+                        type='button'
                     >
                         <p>
-                            Login
+                            Log Out
                         </p>
-                    </Button>
-                </Link> */}
-
+                    </Button>}
+                <div>
+                    {alert}
                 </div>
-                <div style={{ display: "flex" }}>
-                    don't have an account yet?
-                    <FCSingUpDialog />
+                <div>
+
                 </div>
             </div>
             <div>
